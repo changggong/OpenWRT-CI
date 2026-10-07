@@ -10,6 +10,16 @@ find ./feeds/luci/collections/ -type f -name "Makefile" -exec sed -i "s/luci-the
 find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js" -exec sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" {} +
 #添加编译日期标识
 find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js" -exec sed -i "s/(\(luciversion || ''\))/(\1) + (' \/ $WRT_MARK-$WRT_DATE')/g" {} +
+#固件版本行只显示自定义版本号（不再拼接 LuCI 版本号与编译日期）
+find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js" -exec sed -i "s|_('Firmware Version'),.*|_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description : ''),|" {} +
+#修改固件版本号（LuCI 状态-概览里显示的"固件版本"，取自 board.release.description=os-release 的 OPENWRT_RELEASE）
+FW_VERSION="openwrt by lgs"
+for FW_FILE in ./package/base-files/files/etc/openwrt_release ./package/base-files/files/usr/lib/os-release; do
+	[ -f "$FW_FILE" ] || continue
+	sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='$FW_VERSION'/" "$FW_FILE"
+	sed -i "s/^PRETTY_NAME=.*/PRETTY_NAME=\"$FW_VERSION\"/" "$FW_FILE"
+	sed -i "s/^OPENWRT_RELEASE=.*/OPENWRT_RELEASE=\"$FW_VERSION\"/" "$FW_FILE"
+done
 
 WIFI_UC="./package/network/config/wifi-scripts/files/lib/wifi/mac80211.uc"
 if [ -f "$WIFI_UC" ]; then
