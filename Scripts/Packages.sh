@@ -65,6 +65,9 @@ UPDATE_PACKAGE "passwall2" "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
 UPDATE_PACKAGE "shadowsocksr-libev" "Openwrt-Passwall/openwrt-passwall-packages" "main" "pkg"
 #dae / daed（eBPF 透明代理：dae 内核 + daed 面板 + luci-app-daede 统一管理）
 UPDATE_PACKAGE "daede" "kenzok8/openwrt-daede" "main"
+#Bandix（eBPF/BTF 流量监控：后端为官方预编译 aarch64 二进制，不需要编 Rust）
+UPDATE_PACKAGE "bandix" "timsaya/openwrt-bandix" "main"
+UPDATE_PACKAGE "luci-app-bandix" "timsaya/luci-app-bandix" "main"
 
 UPDATE_PACKAGE "diskmanager" "4IceG/luci-app-mini-diskmanager" "main"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
