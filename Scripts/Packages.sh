@@ -63,6 +63,8 @@ UPDATE_PACKAGE "passwall" "Openwrt-Passwall/openwrt-passwall" "main" "pkg"
 UPDATE_PACKAGE "passwall2" "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
 #passwall SSR 协议内核（immortalwrt feeds 里没有这个包，从 passwall 官方包仓库单独抽取）
 UPDATE_PACKAGE "shadowsocksr-libev" "Openwrt-Passwall/openwrt-passwall-packages" "main" "pkg"
+#dae / daed（eBPF 透明代理：dae 内核 + daed 面板 + luci-app-daede 统一管理）
+UPDATE_PACKAGE "daede" "kenzok8/openwrt-daede" "main"
 
 UPDATE_PACKAGE "diskmanager" "4IceG/luci-app-mini-diskmanager" "main"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
