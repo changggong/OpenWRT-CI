@@ -12,8 +12,10 @@ find ./feeds/luci/modules/luci-mod-system/ -type f -name "flash.js" -exec sed -i
 find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js" -exec sed -i "s/(\(luciversion || ''\))/(\1) + (' \/ $WRT_MARK-$WRT_DATE')/g" {} +
 #固件版本行只显示自定义版本号（不再拼接 LuCI 版本号与编译日期）
 find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js" -exec sed -i "s|_('Firmware Version'),.*|_('Firmware Version'), (L.isObject(boardinfo.release) ? boardinfo.release.description : ''),|" {} +
+#修改内核版本号（LuCI 状态-概览里显示的"内核版本"，仅改显示，uname -r 仍为真实内核）
+find ./feeds/luci/modules/luci-mod-status/ -type f -name "10_system.js" -exec sed -i "s|_('Kernel Version'),.*|_('Kernel Version'),   '6.6.6.6',|" {} +
 #修改固件版本号（LuCI 状态-概览里显示的"固件版本"，取自 board.release.description=os-release 的 OPENWRT_RELEASE）
-FW_VERSION="openwrt by lgs"
+FW_VERSION="openwrt"
 for FW_FILE in ./package/base-files/files/etc/openwrt_release ./package/base-files/files/usr/lib/os-release; do
 	[ -f "$FW_FILE" ] || continue
 	sed -i "s/^DISTRIB_DESCRIPTION=.*/DISTRIB_DESCRIPTION='$FW_VERSION'/" "$FW_FILE"
@@ -30,8 +32,9 @@ if [ -f "$WIFI_UC" ]; then
 fi
 
 CFG_FILE="./package/base-files/files/bin/config_generate"
-#修改默认IP地址
+#修改默认IP地址（immortalwrt 的 LAN 默认网段是 10.10.10.1，不是 192.168.x.x，需单独替换）
 sed -i "s/192\.168\.[0-9]*\.[0-9]*/$WRT_IP/g" $CFG_FILE
+sed -i "/lan) ipad=/s/\"[0-9.]*\"/\"$WRT_IP\"/" $CFG_FILE
 #修改默认主机名
 sed -i "s/hostname='.*'/hostname='$WRT_NAME'/g" $CFG_FILE
 
