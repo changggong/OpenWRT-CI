@@ -38,11 +38,26 @@ sed -i "/lan) ipad=/s/\"[0-9.]*\"/\"$WRT_IP\"/" $CFG_FILE
 #修改默认主机名
 sed -i "s/hostname='.*'/hostname='$WRT_NAME'/g" $CFG_FILE
 
+#默认启用IPv6（LAN 下发 DHCPv6；RA 本来就是 server）
+DHCP_CONF="./package/network/services/dnsmasq/files/dhcp.conf"
+if [ -f "$DHCP_CONF" ]; then
+	sed -i "/config dhcp lan/,/^\$/ s/option dhcpv6.*/option dhcpv6\tserver/" "$DHCP_CONF"
+fi
+
+#默认启用UPnP（含IPv6 pinhole）
+UPNP_CONF="./feeds/packages/net/miniupnpd/files/upnpd.config"
+if [ -f "$UPNP_CONF" ]; then
+	sed -i "s/option enabled\t*0/option enabled\t\t1/; s/option ipv6_disable\t*1/option ipv6_disable\t0/" "$UPNP_CONF"
+fi
+
 #配置文件修改
 echo "CONFIG_PACKAGE_luci=y" >> ./.config
 echo "CONFIG_LUCI_LANG_zh_Hans=y" >> ./.config
 echo "CONFIG_PACKAGE_luci-theme-$WRT_THEME=y" >> ./.config
-echo "CONFIG_PACKAGE_luci-app-$WRT_THEME-config=y" >> ./.config
+#主题自带的配置插件存在时才启用（如 aurora-config；carbon 没有）
+if [ -d "./package/luci-app-$WRT_THEME-config" ] || [ -d "./feeds/luci/applications/luci-app-$WRT_THEME-config" ]; then
+	echo "CONFIG_PACKAGE_luci-app-$WRT_THEME-config=y" >> ./.config
+fi
 
 #引入私有扩展配置
 if [ -f "$GITHUB_WORKSPACE/Config/PRIVATE.txt" ]; then
